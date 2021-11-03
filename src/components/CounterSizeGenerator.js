@@ -1,23 +1,30 @@
-import React, { useState } from "react";
+import { useDispatch,useSelector } from "react-redux"
 
-function CounterSizeGenerator(props) {
-
-    const [size, setSize] = useState(0);
-
-    function handleChangeSize(event) {
-        setSize(parseInt(event.target.value))
+export const CounterSizeGenerator = () => {
+    const dispatch = useDispatch();
+    const counterSize = useSelector((state) => state.counterSize);
+  
+    const handleSizeChange = (e) => {
+      let newSize = parseInt(e.target.value.toString());
+      if (newSize >= 1 && newSize <= 5 && newSize !== counterSize) {
+        dispatch({ type: 'resetSum' });
+        dispatch({ type: 'updateCounterSize', payload: newSize });
+      }
     }
-
-    function generateCounter(){
-        props.updateCounterSize(size);
+  
+    const generateNewCounterWithRandomSize = () => {
+      const newSize = 1 + Math.floor(Math.random() * 5);
+      if (newSize !== counterSize) {
+        dispatch({ type: 'updateCounterSize', payload: newSize });
+        dispatch({ type: 'resetSum' });
+      }
     }
     return (
-        <div>
-            <span>Size:</span>
-            <input min="0" type="number" value={size} onChange={handleChangeSize}></input>
-            <button onClick={generateCounter}>generate</button>
-        </div>
+        <div className="CounterSizeGenerator">
+            <span>Size: </span>
+            <input type="number" min="1" max="5"value={counterSize} onChange={handleSizeChange}/>            
+            <button onClick={generateNewCounterWithRandomSize}/>        
+            </div>
     );
-}
 
-export default CounterSizeGenerator;
+}
